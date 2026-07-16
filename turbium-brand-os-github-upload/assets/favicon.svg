@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#0E1512"/>
-  <path d="M1 49V15Q1 1 15 1h34q14 0 14 14v34q0 14-14 14H15Z" fill="none" stroke="#4EEAC0" stroke-width="2"/>
-  <text x="8" y="14" fill="#8A9A94" font-family="monospace" font-size="7">65</text>
-  <text x="32" y="43" fill="#4EEAC0" font-family="-apple-system,system-ui,sans-serif" font-size="30" font-weight="700" text-anchor="middle">Tb</text>
-  <text x="56" y="57" fill="#8A9A94" font-family="monospace" font-size="5" text-anchor="end">158.93</text>
-</svg>
