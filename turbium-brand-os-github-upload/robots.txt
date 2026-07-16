@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rayivan001-cell.github.io/m1/sitemap.xml
