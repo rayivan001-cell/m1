@@ -98,7 +98,7 @@
     const back = audit.querySelector('[data-back]');
     const next = audit.querySelector('[data-next]');
     const result = audit.querySelector('.audit-result');
-    const scoreNode = audit.querySelector('[data-score]');
+    const scoreNode = audit.querySelector('.audit-result [data-score]');
     const resultTitle = audit.querySelector('[data-result-title]');
     const resultCopy = audit.querySelector('[data-result-copy]');
     let current = 0;
@@ -111,12 +111,14 @@
       if (back) back.style.visibility = current === 0 ? 'hidden' : 'visible';
       if (next) next.textContent = current === questions.length - 1 ? 'Показать результат' : 'Следующий вопрос';
     };
-    audit.querySelectorAll('.option').forEach(option => option.addEventListener('click', () => {
+    audit.addEventListener('click', event => {
+      const option = event.target instanceof Element ? event.target.closest('.option') : null;
+      if (!option || !audit.contains(option)) return;
       const question = option.closest('.question');
       question?.querySelectorAll('.option').forEach(item => item.classList.remove('selected'));
       option.classList.add('selected');
       answers[question?.dataset.key || 'unknown'] = Number(option.dataset.score || 0);
-    }));
+    });
     back?.addEventListener('click', () => { if (current > 0) show(current - 1); });
     next?.addEventListener('click', () => {
       const question = questions[current];
