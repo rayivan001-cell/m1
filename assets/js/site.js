@@ -32,6 +32,8 @@
 
   const closeMenu = (restore = false) => {
     menuButton?.setAttribute('aria-expanded', 'false');
+    const menuText = menuButton?.querySelector('.sr-only');
+    if (menuText) menuText.textContent = 'Открыть меню';
     mobileNav?.classList.remove('open');
     document.body.classList.remove('menu-open');
     if (restore && lastFocus instanceof HTMLElement) lastFocus.focus();
@@ -40,6 +42,8 @@
     const open = menuButton.getAttribute('aria-expanded') === 'true';
     if (!open) lastFocus = document.activeElement;
     menuButton.setAttribute('aria-expanded', String(!open));
+    const menuText = menuButton.querySelector('.sr-only');
+    if (menuText) menuText.textContent = open ? 'Открыть меню' : 'Закрыть меню';
     mobileNav?.classList.toggle('open', !open);
     document.body.classList.toggle('menu-open', !open);
     if (!open) mobileNav?.querySelector('a')?.focus();
@@ -56,6 +60,12 @@
     }
   });
   addEventListener('resize', () => { if (innerWidth > 1160) closeMenu(); }, { passive: true });
+
+  const jm = document.querySelector('.journey-more');
+  jm?.addEventListener('click', () => {
+    jm.closest('.journey-map')?.classList.add('expanded');
+    jm.setAttribute('aria-expanded', 'true');
+  });
 
   const page = document.body.dataset.page;
   document.querySelectorAll(`[data-page-link="${page}"]`).forEach(link => link.setAttribute('aria-current', 'page'));
@@ -85,7 +95,7 @@
     if (leadValue) leadValue.textContent = `${leads}`;
     const low = Math.round(leads * .1 * price);
     const high = Math.round(leads * .25 * price);
-    lossResult.textContent = `${low.toLocaleString('ru-RU')}–${high.toLocaleString('ru-RU')} ₽`;
+    lossResult.textContent = `${low.toLocaleString('ru-RU')}-${high.toLocaleString('ru-RU')} ₽`;
   };
   leadRange?.addEventListener('input', recalc);
   leadPrice?.addEventListener('input', recalc);
@@ -115,8 +125,12 @@
       const option = event.target instanceof Element ? event.target.closest('.option') : null;
       if (!option || !audit.contains(option)) return;
       const question = option.closest('.question');
-      question?.querySelectorAll('.option').forEach(item => item.classList.remove('selected'));
+      question?.querySelectorAll('.option').forEach(item => {
+        item.classList.remove('selected');
+        item.setAttribute('aria-pressed', 'false');
+      });
       option.classList.add('selected');
+      option.setAttribute('aria-pressed', 'true');
       answers[question?.dataset.key || 'unknown'] = Number(option.dataset.score || 0);
     });
     back?.addEventListener('click', () => { if (current > 0) show(current - 1); });
@@ -137,17 +151,26 @@
         if (scoreNode) scoreNode.textContent = String(score);
         if (score < 40) {
           if (resultTitle) resultTitle.textContent = 'Начните с одной связки';
-          if (resultCopy) resultCopy.textContent = 'Система пока не требует сложного внедрения. Сначала соберите единый путь заявки и проверьте его на коротком пилоте.';
+          if (resultCopy) resultCopy.textContent = 'Сложная система вам пока не нужна. Сначала соберите один понятный путь заявки и проверьте его коротким пробным запуском.';
         } else if (score < 70) {
           if (resultTitle) resultTitle.textContent = 'Сначала найдите утечку';
-          if (resultCopy) resultCopy.textContent = 'Каналы уже работают, но между заявкой и продажей теряется управляемость. Нужны диагностика и единый экран Пульс.';
+          if (resultCopy) resultCopy.textContent = 'Реклама уже работает, но между заявкой и продажей теряется порядок. Начните с диагностики и одного экрана Пульс.';
         } else {
           if (resultTitle) resultTitle.textContent = 'Система готова к точечному росту';
-          if (resultCopy) resultCopy.textContent = 'Базовый контроль уже есть. Не перестраивайте всё: выберите один подтверждённый канал, усилите его и добавьте накопительный GEO-контур.';
+          if (resultCopy) resultCopy.textContent = 'Базовый порядок уже есть. Не перестраивайте всё: усильте один канал, который доказал результат, и добавьте видимость в поиске (GEO).';
+        }
+        const mailLink = result?.querySelector('a[href^="mailto:"]');
+        if (mailLink) {
+          const subject = 'Результат бесплатного аудита TURBIUM';
+          const body = `Здравствуйте! Моя оценка порядка в заявках: ${score} из 100. Хочу обсудить первый шаг.`;
+          mailLink.href = `mailto:hello@turbium.ru?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         }
         steps.forEach(step => step.classList.remove('active'));
+        result?.focus({ preventScroll: true });
       }
     });
+    audit.querySelectorAll('.option').forEach(option => option.setAttribute('aria-pressed', 'false'));
+    result?.setAttribute('tabindex', '-1');
     show(0);
   }
 })();
